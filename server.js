@@ -4,6 +4,10 @@ const mongodb = require("./config/db")
 require("dotenv").config();
 
 const user = require("./routes/user")
+const student = require("./routes/student")
+const teacher = require("./routes/teacher")
+
+app.use("/")
 app.use("/user" ,user )
 
 

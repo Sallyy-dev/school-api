@@ -1,28 +1,70 @@
-function createTeacher(req, res) {
-  res.status(201).json({ success: true, message: "teacher created" });
-}
+const Teacher = require("../models/teacher");
 
-function getAllTeachers(req, res) {
-  res.json({ success: true, teachers: [] });
-}
+const createTeacher = async(req, res)=> {
+  try{
+    const {user , subject , phone} = req.body;
+    if (!user || !subject || !phone) {
+      return res.status(400).json({ success: false, message: "Missing fields" });
+    }
+    const teacher = new Teacher({
+      user:user,
+      subject:subject,
+      phone:phone
+    });
+    const newTeacher = await teacher.save();
+    res.status(201).json({ success: true, message: "Teacher created", newTeacher:newTeacher });
+  }
+  catch(err){
+  res.status(400).json({ success: false, message: err.message });
 
-function getTeacherById(req, res) {
-  const { id } = req.params;
-  res.json({ success: true, teacher: { id } });
-}
+  }
+};
 
-function updateTeacher(req, res) {
-  const { id } = req.params;
-  res.json({ success: true, message: `Teacher ${id} updated` });
-}
 
-function deleteTeacher(req, res) {
-  const { id } = req.params;
-  res.json({ success: true, message: `Teacher${id} deleted` });
-}
+const getAllTeacher = async (req, res) => {
+  try {
+    const users = await Student.find();
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+const getTeacherById = async (req, res)=>{
+      try {
+       const teacher = await Teacher.findById(req.params.id);
+      if (!teacher) return res.status(404).json({ message: "teacher not found" });
+      res.json(teacher);
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
+};
+
+const updateTeacher = async (req, res)=>{
+      try {
+       const teacher = await Teacher.findById(req.params.id);
+      if (!teacher) return res.status(404).json({ message: "teacher not found" });
+      res.json(teacher);
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
+};
+
+
+const deleteTeacher = async(req,res)=>{
+      try {
+      const teacher = await Teacher.findById(req.params.id);
+      if (!teacher) return res.status(404).json({ message: "teacher not found" });
+      res.json({ message: "teacher deleted" });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+};
+
 module.exports = {
   createTeacher,
-  getAllTeachers,
+  getAllTeacher,
   getTeacherById,
   updateTeacher,
   deleteTeacher,

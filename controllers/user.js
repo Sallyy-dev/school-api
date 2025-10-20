@@ -64,6 +64,12 @@ const isPasswordValid = await bcrypt.compare(password, user.password);
   }
 });
 
+    res.cookie(process.env.COOKIE_NAME, token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+    });
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -82,8 +88,28 @@ const logout = async (req, res) => {
   }
 };
 
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
-module.exports = {register , login , logout}
+
+const getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+module.exports = {register , login , logout , getAllUsers , getUserById}
 
 
 
